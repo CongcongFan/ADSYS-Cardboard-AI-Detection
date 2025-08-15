@@ -1,0 +1,20 @@
+Bundle Warp QC Report
+Image: IMG_5497.JPG
+Model: yolo11l-seg.pt
+Assumptions: length=1000mm, height=70mm
+Scale: px_per_mm_x=0.6400, px_per_mm_y=0.6653
+
+TOP edge:
+  max_abs_dev = 54.36 mm at x = 364.1 mm
+  warp_pct     = 5.436 %
+  edge_window (±150mm): L=41.705 mm, R=22.256 mm
+
+BOTTOM edge:
+  max_abs_dev = 31.922 mm at x = 410.9 mm
+  warp_pct     = 3.192 %
+  edge_window (±150mm): L=12.067 mm, R=25.987 mm
+
+Decision: REJECT  (threshold = 2.0%)
+Notes:
+- Warp% = max_vertical_deviation_mm / length_mm * 100 (baseline = line through edge endpoints)
+- Edge window checks are useful to catch corner-up curl.
