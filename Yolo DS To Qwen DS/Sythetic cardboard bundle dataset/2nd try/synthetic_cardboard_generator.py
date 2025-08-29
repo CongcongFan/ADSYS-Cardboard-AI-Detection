@@ -10,12 +10,16 @@ import time
 import random
 from typing import List, Dict, Optional
 from datetime import datetime
+from urllib.parse import urlparse
+from pathlib import Path
 
 class CardboardSyntheticGenerator:
-    def __init__(self, roboflow_api_key: str, project_url: str):
+    def __init__(self, roboflow_api_key: str, project_url: str, download_dir: str = "generate image folder"):
         self.api_key = roboflow_api_key
         self.project_url = project_url
         self.api_endpoint = f"https://api.roboflow.com/synthetic-image?api_key={self.api_key}"
+        self.download_dir = Path(download_dir)
+        self.download_dir.mkdir(parents=True, exist_ok=True)
         
         # Prompt components for variation
         self.lighting_variations = [
@@ -68,8 +72,26 @@ class CardboardSyntheticGenerator:
         prompt = " ".join(prompt.split())
         return prompt
 
-    def generate_image(self, prompt: str) -> Optional[Dict]:
-        """Generate a single synthetic image"""
+    def download_image(self, image_url: str, filename: str) -> bool:
+        """Download image from URL to local directory"""
+        try:
+            response = requests.get(image_url, stream=True)
+            if response.status_code == 200:
+                file_path = self.download_dir / filename
+                with open(file_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                print(f"✓ Downloaded: {filename}")
+                return True
+            else:
+                print(f"✗ Failed to download image: {response.status_code}")
+                return False
+        except Exception as e:
+            print(f"✗ Download error: {str(e)}")
+            return False
+    
+    def generate_image(self, prompt: str, image_index: int = 0) -> Optional[Dict]:
+        """Generate a single synthetic image and download it locally"""
         payload = {
             "project_url": self.project_url,
             "prompt": prompt
@@ -83,7 +105,19 @@ class CardboardSyntheticGenerator:
             response = requests.post(self.api_endpoint, headers=headers, data=json.dumps(payload))
             
             if response.status_code == 200:
-                return response.json()
+                result = response.json()
+                
+                # Download the image if URL is provided
+                if 'image_url' in result and result['image_url']:
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = f"cardboard_bundle_{timestamp}_{image_index:03d}.jpg"
+                    
+                    if self.download_image(result['image_url'], filename):
+                        result['local_path'] = str(self.download_dir / filename)
+                    else:
+                        result['download_failed'] = True
+                
+                return result
             else:
                 print(f"Error {response.status_code}: {response.text}")
                 return None
@@ -93,13 +127,16 @@ class CardboardSyntheticGenerator:
             return None
 
     def batch_generate(self, num_images: int, output_file: str = "generation_log.txt") -> List[Dict]:
-        """Generate multiple images with logging"""
+        """Generate multiple images with logging and local download"""
         results = []
         successful_generations = 0
+        successful_downloads = 0
         
         print(f"Starting batch generation of {num_images} cardboard bundle images...")
+        print(f"Images will be saved to: {self.download_dir.absolute()}")
         
-        with open(output_file, 'w') as log_file:
+        log_path = self.download_dir / output_file
+        with open(log_path, 'w') as log_file:
             log_file.write(f"Cardboard Bundle Synthetic Generation Log - {datetime.now()}\n")
             log_file.write("="*60 + "\n\n")
             
@@ -110,7 +147,7 @@ class CardboardSyntheticGenerator:
                 log_file.write(f"Image {i+1}:\n")
                 log_file.write(f"Prompt: {prompt}\n")
                 
-                result = self.generate_image(prompt)
+                result = self.generate_image(prompt, i+1)
                 
                 if result:
                     successful_generations += 1
@@ -122,7 +159,12 @@ class CardboardSyntheticGenerator:
                     
                     if 'image_url' in result:
                         log_file.write(f"Status: SUCCESS - URL: {result['image_url']}\n")
-                        print(f"✓ Generated successfully: {result['image_url']}")
+                        if 'local_path' in result:
+                            log_file.write(f"Local Path: {result['local_path']}\n")
+                            successful_downloads += 1
+                            print(f"✓ Generated and downloaded: {result['local_path']}")
+                        else:
+                            print(f"✓ Generated but download failed: {result['image_url']}")
                     else:
                         log_file.write(f"Status: SUCCESS - No URL returned\n")
                         print("✓ Generated successfully (no URL)")
@@ -138,6 +180,7 @@ class CardboardSyntheticGenerator:
                     time.sleep(2)
         
         print(f"\nGeneration complete: {successful_generations}/{num_images} successful")
+        print(f"Downloads complete: {successful_downloads}/{successful_generations} downloaded")
         return results
 
     def create_specialized_prompts(self) -> List[str]:
@@ -164,15 +207,17 @@ class CardboardSyntheticGenerator:
         return specialized_prompts
 
     def generate_specialized_set(self) -> List[Dict]:
-        """Generate the specialized prompt set"""
+        """Generate the specialized prompt set with local download"""
         prompts = self.create_specialized_prompts()
         results = []
+        successful_downloads = 0
         
         print(f"Generating {len(prompts)} specialized cardboard images...")
+        print(f"Images will be saved to: {self.download_dir.absolute()}")
         
         for i, prompt in enumerate(prompts):
             print(f"Generating specialized image {i+1}/{len(prompts)}...")
-            result = self.generate_image(prompt)
+            result = self.generate_image(prompt, f"specialized_{i+1}")
             
             if result:
                 results.append({
@@ -181,18 +226,24 @@ class CardboardSyntheticGenerator:
                     'result': result,
                     'type': 'specialized'
                 })
-                print(f"✓ Specialized image generated")
+                if 'local_path' in result:
+                    successful_downloads += 1
+                    print(f"✓ Specialized image generated and downloaded")
+                else:
+                    print(f"✓ Specialized image generated (download failed)")
             else:
                 print(f"✗ Specialized generation failed")
             
             time.sleep(2)
         
+        print(f"Specialized downloads: {successful_downloads}/{len(results)} downloaded")
         return results
 
 def main():
     # Configuration - Fixed project URL format
     ROBOFLOW_API_KEY = "yiXU9DZrZTOcO2taUh0g"
     PROJECT_URL = "boxes-jdugd/synthetic_finished_cardboard_b-tflkf"  # Fixed: Just the project identifier
+    DOWNLOAD_DIR = "generate image folder"  # Local directory for downloaded images
     
     if not ROBOFLOW_API_KEY:
         print("Error: Please set ROBOFLOW_API_KEY environment variable")
@@ -202,8 +253,8 @@ def main():
         print("Error: Please set ROBOFLOW_PROJECT_URL environment variable")
         return
     
-    # Initialize generator
-    generator = CardboardSyntheticGenerator(ROBOFLOW_API_KEY, PROJECT_URL)
+    # Initialize generator with download directory
+    generator = CardboardSyntheticGenerator(ROBOFLOW_API_KEY, PROJECT_URL, DOWNLOAD_DIR)
     
     # Generate images
     print("Cardboard Bundle Synthetic Data Generator")
