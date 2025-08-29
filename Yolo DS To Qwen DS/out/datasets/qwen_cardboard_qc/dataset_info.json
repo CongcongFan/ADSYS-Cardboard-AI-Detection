@@ -1,0 +1,23 @@
+{
+  "dataset_name": "qwen_cardboard_qc",
+  "total_samples": 168,
+  "splits": {
+    "train": 117,
+    "validation": 16,
+    "test": 35
+  },
+  "features": [
+    "image",
+    "conversations",
+    "filename",
+    "label",
+    "reason"
+  ],
+  "conversation_format": "User asks for cardboard bundle assessment, assistant provides analysis",
+  "labels": [
+    "Pass",
+    "Fail"
+  ],
+  "source_images_dir": "./overlays_overlay",
+  "source_labels_csv": "./qc_labels.csv"
+}

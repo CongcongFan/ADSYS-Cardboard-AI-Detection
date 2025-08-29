@@ -1,0 +1,92 @@
+---
+alwaysApply: false
+---
+Here is a working script for image segmentation via yolo 11 and make decision by qwen2.5vl. 
+
+Convert this script to 
+
+1. Have option to use inference on web camera, video or image. 
+
+2. Showing decision text in clear format and color overlay above all inference result in options above.
+
+3. Showing FPS and inference time on top-right corner.
+
+4. Show bounding box and segmentation masking overlay. 
+
+5. show confidence and object class next to bounding box. 
+
+6. I have installed DroidCam, the phone showing WIFI IP: 192.168.0.66 Port: 4747. Add another option for connecting my phone to compute as a camera。Keep existing functions.
+
+7. When Qwen finish inferencing (no streaming), show it's stats. Change background of the Qwen's decision text color to show user the response been updated. Because the computer is slow, takes 150ms for Yolo, and 2000~3000ms for Qwen. Qwen should process async with yolo. Yolo work on its own, Qwen work on its own. 
+
+8. Make sure you pass the frame image with Yolo's bounding box overlayed to Qwen. 
+
+9. In YOLO, Set IoU to 20% to avoid multiple bounding box over one object
+
+10. The frame that feeds to Yolo is 640 pixels.
+
+Final note:
+Please start with simple code first, then we can add more functions
+---
+code:
+
+ from ultralytics import YOLO
+from matplotlib import pyplot as plt
+from PIL import Image
+import numpy as np
+
+inst_model = YOLO('yolo11l-seg.pt')
+
+img = './test_img/IMG_5497.JPG'
+
+coord = instance_results[0].masks.xy
+plt.ylim(3000, 0)
+plt.plot(coord[0][:, 0], coord[0][:, 1], 'r-') 
+
+import cv2
+img_rgb = cv2.cvtColor(instance_results[0].plot(), cv2.COLOR_BGR2RGB)
+plt.imshow(img_rgb) 
+
+import cv2
+import base64
+import matplotlib.pyplot as plt
+
+
+# Load as OpenCV image
+img = cv2.imread(img)
+
+# Get bounding box
+x1, y1, x2, y2 = instance_results[0].boxes.xyxy[0].numpy().astype(int)
+
+# Draw rectangle
+cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 10)
+
+# Encode to base64
+_, buffer = cv2.imencode('.jpg', img)
+img_base64 = base64.b64encode(buffer).decode('utf-8')
+print(img_base64[:10])
+
+# Show with matplotlib (OpenCV loads in BGR, convert to RGB)
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+plt.show()
+
+import requests
+import base64
+import json
+
+
+url = "http://localhost:11434/api/generate"
+
+payload = {
+    "model": "qwen2.5vl:7b",
+    "prompt": "Describe the cardboard in green bounding box, return only in JSON. \nWarp: True/ False\nOverall quality: Good(completely flat, no gap), medium(Slightly gap), bad",
+    "stream": False,
+    "images": [img_base64]
+}
+
+headers = {"Content-Type": "application/json"}
+
+response = requests.post(url, headers=headers, data=json.dumps(payload))
+
+print(response.json()['response'])

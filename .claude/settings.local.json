@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(curl:*)",
+      "Bash(ollama ps:*)",
+      "Bash(ollama run:*)",
+      "Bash(ollama show:*)",
+      "Bash(set OLLAMA_NUM_PARALLEL=1)",
+      "Bash(set OLLAMA_MAX_LOADED_MODELS=1)",
+      "Bash(ollama serve:*)",
+      "Bash($env:OLLAMA_NUM_PARALLEL=1)",
+      "Bash($env:OLLAMA_MAX_LOADED_MODELS=1)",
+      "Bash($env:OLLAMA_FLASH_ATTENTION=1)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell:*)",
+      "Bash($env:OLLAMA_NUM_PARALLEL=\"1\")",
+      "Bash($env:OLLAMA_MAX_LOADED_MODELS=\"1\")",
+      "Bash(ollama create:*)",
+      "Bash(ollama stop:*)",
+      "Bash(pip show:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(dir)",
+      "Bash(nvidia-smi:*)",
+      "Bash(pip uninstall:*)",
+      "Bash(sed:*)",
+      "Bash(chmod:*)",
+      "Bash(timeout 10 python:*)",
+      "Bash(.venvScriptsactivate)",
+      "Bash(call venvScriptsactivate.bat)",
+      "Bash(del test_realtime_yolo.py)",
+      "WebFetch(domain:blog.roboflow.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,6 @@
+FROM qwen2.5vl:3b
+
+PARAMETER num_gpu -1
+PARAMETER num_ctx 2048
+PARAMETER temperature 0.1
+PARAMETER top_p 0.9

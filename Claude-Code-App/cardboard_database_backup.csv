@@ -1,0 +1,11 @@
+barcode,timestamp,picture_1_warp,picture_1_quality,picture_2_warp,picture_2_quality,picture_3_warp,picture_3_quality,picture_4_warp,picture_4_quality,final_warp,final_quality,status
+1234567890,2025-08-21T14:01:53.477358,True,bad,True,medium,True,medium,True,medium,True,medium,completed
+9876543210,2025-08-21T13:47:46.317733,True,bad,False,good,False,good,False,good,False,good,completed
+5678901234,,,,,,,,,,,,pending
+3456789012,,,,,,,,,,,,pending
+7890123456,,,,,,,,,,,,pending
+2345678901,,,,,,,,,,,,pending
+6789012345,,,,,,,,,,,,pending
+4567890123,,,,,,,,,,,,pending
+8901234567,,,,,,,,,,,,pending
+1357924680,,,,,,,,,,,,pending
