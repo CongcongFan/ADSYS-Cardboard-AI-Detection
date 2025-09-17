@@ -139,12 +139,36 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# Model files (uncomment if you want to exclude large model files)
-# *.pt
-# *.pth
-# *.onnx
-# *.h5
-# *.pb
+# Model files and large binary files (>100MB)
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pb
+*.safetensors
+*.pyd
+*.dll
+*.lib
+*.zip
+
+# Large model directories
+*/models/weights/
+*/models/
+**/models/weights/
+**/models/
+
+# Specific large files and directories
+Yolo DS To Qwen DS/Finetuned LoRA model/
+**/llama.cpp/
+roboflow_deploy.zip
+state_dict.pt
+adapter_model.safetensors
+model.safetensors
+
+# PyTorch and CUDA libraries
+torch/lib/
+**/torch/lib/
+polars/polars.pyd
 
 # Output/result directories
 trash/
