@@ -63,7 +63,7 @@ def main():
     out_dir = Path(args.out); (out_dir / "images").mkdir(parents=True, exist_ok=True)
     meta_path = out_dir / "metadata.jsonl"
 
-    client = OpenAI(api_key="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")  # uses OPENAI_API_KEY
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY_HERE"))  # uses OPENAI_API_KEY
 
     with meta_path.open("a", encoding="utf-8") as mf:
         for i in range(args.count):
