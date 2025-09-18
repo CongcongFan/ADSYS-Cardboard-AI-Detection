@@ -191,3 +191,21 @@ runs/
 # Cache directories
 .cache/
 .pytest_cache/
+
+# API Keys and secrets (SECURITY)
+*.env
+.env*
+config.json
+secrets.json
+*api_key*
+*API_KEY*
+*secret*
+*SECRET*
+*token*
+*TOKEN*
+
+# API Key patterns
+sk-*
+AIza*
+gho_*
+ghp_*
