@@ -1,0 +1,2 @@
+# This file ensures the weights directory is preserved in git
+# Model files (.pt) are excluded due to size, but directory structure is maintained

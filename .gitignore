@@ -151,11 +151,15 @@ $RECYCLE.BIN/
 *.lib
 *.zip
 
-# Large model directories
-*/models/weights/
-*/models/
-**/models/weights/
-**/models/
+# Large model files (allow directory structure but exclude large files)
+*/models/weights/*.pt
+*/models/weights/*.pth
+*/models/weights/*.onnx
+*/models/weights/*.zip
+**/models/weights/*.pt
+**/models/weights/*.pth
+**/models/weights/*.onnx
+**/models/weights/*.zip
 
 # Specific large files and directories
 Yolo DS To Qwen DS/Finetuned LoRA model/

@@ -57,9 +57,27 @@ pip install -r requirements.txt
 ```
 
 ### 4. Download Model Weights
-Download the trained YOLO model weights and place them in the project directory:
-- Model file should be placed at: `Versions/V2 Nanobanana Sythetic cardboard bundle dataset/models/weights/`
-- The GUI will look for `model_- 6 september 2025 11_35.pt` by default
+The repository includes the folder structure for model weights, but the actual model files must be downloaded separately due to GitHub's file size limitations.
+
+**Model Location**: `Versions/V2 Nanobanana Sythetic cardboard bundle dataset/models/weights/`
+
+#### Required Model File:
+- **Primary Model**: `model_- 6 september 2025 11_35.pt` (~114 MB)
+  - Place this file in the weights directory
+  - The GUI application will auto-detect it at startup
+
+#### Optional Files:
+- `model_artifacts.json` - Model metadata
+- `roboflow_deploy.zip` - Roboflow deployment package
+- `state_dict.pt` - PyTorch state dictionary
+
+**Download Instructions**:
+1. Contact the project maintainer for trained model access
+2. Download the model files to your local machine
+3. Copy `model_- 6 september 2025 11_35.pt` to the `weights/` directory
+4. The GUI will automatically detect and load the model
+
+**Note**: The `weights/` directory is included in the repository with documentation, but actual model files are excluded due to size constraints.
 
 ## 🖥️ Usage
 
